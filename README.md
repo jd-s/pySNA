@@ -66,4 +66,4 @@ The first columns indicated, if it is a weak (w) or strong (s) tie. Type refers 
 
 pySNA is licensed under the GNU General Public License v3.0.
 
-If you use this software, please cite the following publication:
+If you use this software, please cite the following publication: J. Dörpinghaus, C. Stenschke. Ein kollaborativer Workflow zur historischen Netzwerkanalyse mit Open Source Software. FrOSCon 2018. In press: Science Track FrOSCon 2018.
