@@ -15,7 +15,7 @@ pySNA parses sna-files (see [ File Format](#file-format)) and outputs a network 
 
 * sna-files are easy, human readable and very flexible. They can be used for a collaborative work on a social network.
 * You can organize your work in subfolders and with generic input files. 
-* The output format is an open format that can be used with many other applications like Cytoscape and Gephi. 
+* The output format is an open format that can be used with many other applications like Cytoscape and Gephi. Currently, pySNA export gexf or graphml files (depending on the file extension). 
 
 We propose a workflow that imports the output in Gephi. 
 
@@ -58,9 +58,9 @@ You can include sng-files which consist of edges. This makes it easier to make c
 
 The next lines contain one edge each in a semicolon-separated way. The format is 
 ```
-w;	Type;	Group/E	;	Name;	Evidence;	Year;	Note
+w;	Type;	Group/E	;	Name;	Evidence;	Year;	Relation
 ```
-The first columns indicated, if it is a weak (w) or strong (s) tie. Type refers to the destination type. If we want to link to all nodes in a group, we can add <code>group</code> to the third column and add the groups name instead a nodes name to the fourth column. We can also add evidence, year and notes to an edge.
+The first columns indicated, if it is a weak (w) or strong (s) tie. Type refers to the destination type. If we want to link to all nodes in a group, we can add <code>group</code> to the third column and add the groups name instead a nodes name to the fourth column. We can also add evidence, year and the type of relation (isMariedTo, isA, ...) to an edge.
 
 # Further information
 

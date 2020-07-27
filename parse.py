@@ -11,7 +11,7 @@ parser.add_option("-i", "--input", dest="inputfolder",
 parser.add_option("-o", "--output", dest="outputfile",
                   help="Output file", default="out.xml", metavar="FILE")
 parser.add_option("-q", "--quiet",
-                  action="store_false", dest="verbose", default=True,
+                  action="store_false", dest="verbose", default=False,
                   help="don't print status messages to stdout")
 
 (options, args) = parser.parse_args()
@@ -25,9 +25,21 @@ G=nx.Graph(selfloops=False)
 for path, subdirs, files in os.walk(options.inputfolder):
 	for name in files:
 		if fnmatch(name, pattern):
-			print ("Processing "+os.path.join(path, name))
+			if not options.verbose:
+				print ("Processing "+os.path.join(path, name))
 			mode = 0
 			node_dict = {}
+			#node_dict['Type'] = ""
+			#node_dict['Name'] = ""
+			#node_dict['Name_German'] = ""
+			#node_dict['Groups'] = ""
+			#node_dict['Sex'] = ""
+			#node_dict['Background'] = ""
+			#node_dict['Notes'] = ""
+			#node_dict['Notes_German'] = ""
+			#node_dict['Evidence'] = ""
+			#node_dict['Type'] = ""
+			#node_dict['Id'] = ""
 			with open(os.path.join(path, name)) as fp:
 				for cnt, line in enumerate(fp):
 					if line.strip() == "":
@@ -51,15 +63,19 @@ for path, subdirs, files in os.walk(options.inputfolder):
 						#	right = right.split(":")
 						node_dict[left]=right
 						#print (left+" -- "+right)
+				if not options.verbose:
+					print ("Added node "+node_dict['Name'])
 				G.add_node(node_dict['Name'])
 				G.nodes[node_dict['Name']].update(node_dict)  
+                        
 
 # Step 2: Create edges
 
 for path, subdirs, files in os.walk(options.inputfolder):
 	for name in files:
 		if fnmatch(name, pattern):
-			print ("Processing Edges for "+os.path.join(path, name))
+			if not options.verbose:
+				print ("Processing Edges for "+os.path.join(path, name))
 			mode = 0
 			node_dict = {}
 			connections = []
@@ -107,17 +123,20 @@ for path, subdirs, files in os.walk(options.inputfolder):
 				if line.strip()[0]=="#":
 					continue
 				elif len(entry)<6:
-					print (" Error in line '"+line+"' - not enough arguments!")
+					if not options.verbose:
+						print (" Error in line '"+line+"' - not enough arguments!")
 					continue
 				else:
 					edge_dict = {}
 					#print (entry[0].upper())
 					edge_dict['Evidence'] = entry[4].strip()
 					edge_dict['Year'] = entry[5].strip()
-					edge_dict['Note'] = entry[6].strip()
+					edge_dict['Relation'] = entry[6].strip()
 					edge_dict['Strong'] = True
+					#edge_dict['Relation'] = ""
 					if entry[0].upper().strip() == "W":
 						edge_dict['Strong'] = False
+					# per Default all non-person edges are not strong
 					if entry[1].upper().strip() != "PERSON":
 						edge_dict['Strong'] = False
 						#print ("-")
@@ -137,15 +156,36 @@ for path, subdirs, files in os.walk(options.inputfolder):
 										#G.edges[node_dict['Name']][p].update(edge_dict)
 					else:
 						if node_dict['Name'] != entry[3].strip():
-							G.add_edge (node_dict['Name'], entry[3].strip())
-							for key, value in edge_dict.items():
-								G[node_dict['Name']][entry[3].strip()][str(key)]=value
-							#G.edges[node_dict['Name']][ entry[3].strip()].update(edge_dict)
+							# Chekf for categories
+							if entry[1].upper().strip() == "GREEK" or entry[1].upper().strip() == "HEBREW":
+								# Original Naming
+								# Check if node exists
+								if entry[3].strip() not in G:
+									# Create Node
+									node_dict2 = {}
+									node_dict2['Name'] = entry[3].strip()
+									node_dict2['Origin'] = entry[1].strip()
+									node_dict2['Type'] = "Entity"
+									G.add_node(node_dict2['Name'])
+									G.nodes[node_dict2['Name']].update(node_dict2) 
+								# Create Edge
+								G.add_edge (node_dict['Name'], entry[3].strip())
+								for key, value in edge_dict.items():
+									G[node_dict['Name']][entry[3].strip()][str(key)]=value
+							else:
+								G.add_edge (node_dict['Name'], entry[3].strip())
+								for key, value in edge_dict.items():
+									G[node_dict['Name']][entry[3].strip()][str(key)]=value
+								#G.edges[node_dict['Name']][ entry[3].strip()].update(edge_dict)
 				
 ## ------------------------------------------------------------------------------
 # w	;	Type	;	Group/E	;	Name	;	Evidence		;	Year	;	Note
 ## ------------------------------------------------------------------------------
 #s	;	Person	;	Group	; 	Apostel	;					;			;
 
-
-nx.write_graphml(G,options.outputfile)
+if options.outputfile.upper().endswith("GRAPHML"):
+	nx.write_graphml(G,options.outputfile)
+elif options.outputfile.upper().endswith("GEXF"):
+	nx.write_gexf(G,options.outputfile)
+else:
+	print ("Error: Can't write specific format.")
