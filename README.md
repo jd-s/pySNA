@@ -29,6 +29,8 @@ After creating your files, you can execute pySNA as follows:
 
 The command parse has only two parameters: <code>-i</code> or <code>--input</code>  for the input folder. This folder and all subfolders will be parsed. <code>-o</code> or <code>--output</code> refers to the graphml output file. <code>-v</code> runs in quiet mode. If you only need a social network, use <code>-s</code>.
 
+The parameter <code>-q</code> will run in quiet mode.
+
 # File Format
 
 The file format of sna-files is quiet easy. The first part of a file consists of an arbitrary list of meta data:
