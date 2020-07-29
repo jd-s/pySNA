@@ -27,7 +27,7 @@ After creating your files, you can execute pySNA as follows:
 ./parse.py -i /home/.../inputfolder -o /home/.../outputfolder/output.xml
 ```
 
-The command parse has only two parameters: <code>-i</code> or <code>--input</code>  for the input folder. This folder and all subfolders will be parsed. <code>-o</code> or <code>--output</code> refers to the graphml output file. 
+The command parse has only two parameters: <code>-i</code> or <code>--input</code>  for the input folder. This folder and all subfolders will be parsed. <code>-o</code> or <code>--output</code> refers to the graphml output file. <code>-v</code> runs in quiet mode. If you only need a social network, use <code>-s</code>.
 
 # File Format
 
@@ -61,6 +61,8 @@ The next lines contain one edge each in a semicolon-separated way. The format is
 w;	Type;	Group/E	;	Name;	Evidence;	Year;	Relation
 ```
 The first columns indicated, if it is a weak (w) or strong (s) tie. Type refers to the destination type. If we want to link to all nodes in a group, we can add <code>group</code> to the third column and add the groups name instead a nodes name to the fourth column. We can also add evidence, year and the type of relation (isMariedTo, isA, ...) to an edge.
+
+Evidences can be split using a colon. You can refer to IXTheo entries (e.g. https://ixtheo.de/Record/109268283X). If you want to reference a particular page, use <code>https://ixtheo.de/Record/109268283X#120</code>.
 
 # Further information
 
