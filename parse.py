@@ -245,7 +245,7 @@ for path, subdirs, files in os.walk(options.inputfolder):
 											G.add_node(auth_dict['Name'])
 											G.nodes[auth_dict['Name']].update(auth_dict)  
 										G.add_edge (authid, docidentifier)
-										G[authid][docidentifier]['Type'] = "isAuthorOf"
+										G[authid][docidentifier]['Relation'] = "isAuthorOf"
 									if page != "":
 										evidences.append ( [docidentifier, {"reference": docidentifier, "page": page, "Relation": "hasReference"}] ) 
 									else:
