@@ -18,6 +18,11 @@ parser.add_option("-q", "--quiet",
 parser.add_option("-s", "--onlysn",
                   action="store_true", dest="onlysna", default=False,
                   help="export only social network")
+		  
+parser.add_option("-b", "--ignorebook",
+                  action="store_true", dest="ignorebook", default=False,
+                  help="ignore biblical book in export")		  
+		  
 
 (options, args) = parser.parse_args()
 pattern = "*.sna"
@@ -112,7 +117,7 @@ for path, subdirs, files in os.walk(options.inputfolder):
 						if left.upper() == "GROUPS":
 							right.replace(' ', '')
 						# Does not work, since GML cannot export lists sadly
-						#	right = right.split(":")
+						#	right = right.split(",")
 						node_dict[left]=right
 						#print (left+" -- "+right)
 				if not options.verbose:
@@ -201,7 +206,7 @@ for path, subdirs, files in os.walk(options.inputfolder):
 						# Check if bible ref
 						if " " in ev:
 							if ":" in ev.split(" ")[1]:
-								if not options.onlysna:
+								if (not options.onlysna) and (not options.ignorebook) :
 									edge_dict['Bible-Ref'] = ev
 									book = ev.strip().split(" ")[0]
 									if not book in G:
@@ -256,20 +261,28 @@ for path, subdirs, files in os.walk(options.inputfolder):
 					 
 					edge_dict['Year'] = entry[5].strip()
 					edge_dict['Relation'] = entry[6].strip()
-					edge_dict['Strong'] = True
+					edge_dict['Strong'] = "weak"
 					#edge_dict['Relation'] = ""
+					if entry[1].upper().strip() == "GROUP" and entry[2].upper().strip() != "GROUP":
+						print ("ERROR: Group at wrong position!")
 					if entry[0].upper().strip() == "W":
-						edge_dict['Strong'] = False
+						edge_dict['Strong'] = "weak"
+					if entry[0].upper().strip() == "S":
+						edge_dict['Strong'] = "strong"
+					elif  entry[0].upper().strip() == "U":
+						edge_dict['Strong'] = "unclear"
+					elif  entry[0].upper().strip() == "A" or entry[0].upper().strip() == "N":
+						edge_dict['Strong'] = "negative"
 					# per Default all non-person edges are not strong
-					if entry[1].upper().strip() != "PERSON":
-						edge_dict['Strong'] = False
+					if entry[1].upper().strip() != "PERSON" and entry[1].upper().strip() != "GROUP":
+						edge_dict['Strong'] = "weak"
 						#print ("-")
 					#print (edge_dict['Strong'])
 					if entry[2].strip().upper() == "GROUP":
 						for (p, d) in G.nodes(data=True):
 							#print (G[node])
 							if "Groups" in d:
-								if entry[3].strip() in d['Groups'].split(":"):
+								if entry[3].strip() in d['Groups'].replace("'","").split(","):
 									#print (node_dict['Name'] + "  "+ p)
 									if node_dict['Name']!= p:
 										G.add_edge (node_dict['Name'], p)
